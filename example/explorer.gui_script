@@ -7,6 +7,25 @@ local function delete_file_nodes(nodes)
 end
 
 
+local function show_text(self, text)
+	delete_file_nodes(self.files)
+	gui.set_enabled(self.closenode, true)
+	gui.set_enabled(self.textnode, true)
+	gui.set_text(self.textnode, text)
+end
+
+
+--- Show the first 1000 bytes of a file
+local function show_file(self, filename)
+	local file, err = io.open(lfs.currentdir() .. "/" .. filename, "rb")
+	if not file then
+		show_text(self, err)
+	else
+		show_text(self, file:read(1000))
+	end
+end
+
+
 local function show_current_dir(self)
 	gui.set_enabled(self.closenode, false)
 	gui.set_enabled(self.textnode, false)
@@ -14,52 +33,56 @@ local function show_current_dir(self)
 	local pool = self.files
 	self.files = {}
 
-	-- get current dir and show it
-	local currentdir = lfs.currentdir()
-	gui.set_text(gui.get_node("currentdir"), currentdir)
+	local ok, err = pcall(function()
+		-- get current dir and show it
+		local currentdir = lfs.currentdir()
+		gui.set_text(gui.get_node("currentdir"), currentdir)
 	
-	-- iterate current dir and show it's contents
-	-- reuse nodes or create new ones
-	for filename in lfs.dir(currentdir) do
-		local file = table.remove(pool)
-		if not file then
-			local nodes = gui.clone_tree(self.fileproto)
-			file = {
-				rootnode = nodes[hash("fileproto/root")],
-				nodes = nodes,
-			}
-			gui.set_enabled(file.rootnode, true)
+		-- iterate current dir and show it's contents
+		-- reuse nodes or create new ones
+		for filename in lfs.dir(currentdir) do
+			local file = table.remove(pool)
+			if not file then
+				local nodes = gui.clone_tree(self.fileproto)
+				file = {
+					rootnode = nodes[hash("fileproto/root")],
+					nodes = nodes,
+				}
+				gui.set_enabled(file.rootnode, true)
+			end
+			gui.set_position(file.rootnode, gui.get_position(self.fileproto) - vmath.vector3(0, 45, 0) * #self.files)
+			table.insert(self.files, file)
+			
+			-- get file attributes and show permissions and file size
+			local attributes = lfs.attributes(currentdir .. "/" .. filename)
+			gui.set_text(file.nodes[hash("fileproto/name")], filename)
+			gui.set_text(file.nodes[hash("fileproto/permissions")], attributes.permissions)
+			gui.set_text(file.nodes[hash("fileproto/size")], attributes.size)
+			
+			file.name = filename
+			file.attributes = attributes
 		end
-		gui.set_position(file.rootnode, gui.get_position(self.fileproto) - vmath.vector3(0, 45, 0) * #self.files)
-		table.insert(self.files, file)
-		
-		-- get file attributes and show permissions and file size
-		local attributes = lfs.attributes(currentdir .. "/" .. filename)
-		gui.set_text(file.nodes[hash("fileproto/name")], filename)
-		gui.set_text(file.nodes[hash("fileproto/permissions")], attributes.permissions)
-		gui.set_text(file.nodes[hash("fileproto/size")], attributes.size)
+	end)
 
-		file.name = filename
-		file.attributes = attributes
-	end
-	
 	-- delete any left over file nodes that we didn't need
 	delete_file_nodes(pool)
+
+	-- show error if something went wrong
+	if not ok then
+		show_text(self, err)
+	end	
 end
 
 
---- Show the first 1000 bytes of a file
-local function show_file(self, filename)
-	delete_file_nodes(self.files)
-	gui.set_enabled(self.closenode, true)
-	gui.set_enabled(self.textnode, true)
-	local file, err = io.open(lfs.currentdir() .. "/" .. filename, "rb")
-	if not file then
-		gui.set_text(self.textnode, err)
-		return
+-- change directory and show it's contents
+local function show_dir(self, dir)
+	local ok, err = pcall(function()
+		lfs.chdir(dir)
+		show_current_dir(self)
+	end)
+	if not ok then
+		show_text(self, err)
 	end
-	local text = file:read(1000)
-	gui.set_text(self.textnode, text)
 end
 
 
@@ -72,7 +95,15 @@ function init(self)
 	gui.set_enabled(self.fileproto, false)
 	gui.set_enabled(self.textnode, false)
 	
-	show_current_dir(self)
+	-- change to application home if on android
+	-- (non rooted devices probably don't have read
+	-- access to anything else)
+	local sys_info = sys.get_sys_info()
+	if sys_info.system_name == "Android" then
+		show_dir(sys.get_save_file("lfs", "."))
+	else
+		show_current_dir(self)
+	end
 end
 
 
@@ -82,8 +113,7 @@ function on_input(self, action_id, action)
 			if gui.pick_node(file.rootnode, action.x, action.y) then
 				-- directory, change dir and show file contents
 				if file.attributes.mode == "directory" then
-					lfs.chdir(file.name)
-					show_current_dir(self)
+					show_dir(self, file.name)
 				-- file, show contents
 				else
 					show_file(self, file.name)
