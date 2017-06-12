@@ -968,11 +968,13 @@ static const struct luaL_Reg fslib[] = {
 static void LuaInit(lua_State* L) {
 	int top = lua_gettop(L);
 
-    //dir_create_meta (L);
-    //lock_create_meta (L);
+    dir_create_meta (L);
+    lock_create_meta (L);
 	luaL_register(L, MODULE_NAME, fslib);
 
-	lua_pop(L, 1);
+    lua_pop(L, 1);
+    lua_pop(L, 1);
+    lua_pop(L, 1);
 	assert(top == lua_gettop(L));
 }
 

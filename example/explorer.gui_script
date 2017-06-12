@@ -1,0 +1,105 @@
+-- delete gui nodes holding file entries
+local function delete_file_nodes(nodes)
+	while #nodes > 0 do
+		local file = table.remove(nodes)
+		gui.delete_node(file.rootnode)
+	end
+end
+
+
+local function show_current_dir(self)
+	gui.set_enabled(self.closenode, false)
+	gui.set_enabled(self.textnode, false)
+
+	local pool = self.files
+	self.files = {}
+
+	-- get current dir and show it
+	local currentdir = lfs.currentdir()
+	gui.set_text(gui.get_node("currentdir"), currentdir)
+	
+	-- iterate current dir and show it's contents
+	-- reuse nodes or create new ones
+	for filename in lfs.dir(currentdir) do
+		local file = table.remove(pool)
+		if not file then
+			local nodes = gui.clone_tree(self.fileproto)
+			file = {
+				rootnode = nodes[hash("fileproto/root")],
+				nodes = nodes,
+			}
+			gui.set_enabled(file.rootnode, true)
+		end
+		gui.set_position(file.rootnode, gui.get_position(self.fileproto) - vmath.vector3(0, 45, 0) * #self.files)
+		table.insert(self.files, file)
+		
+		-- get file attributes and show permissions and file size
+		local attributes = lfs.attributes(currentdir .. "/" .. filename)
+		gui.set_text(file.nodes[hash("fileproto/name")], filename)
+		gui.set_text(file.nodes[hash("fileproto/permissions")], attributes.permissions)
+		gui.set_text(file.nodes[hash("fileproto/size")], attributes.size)
+
+		file.name = filename
+		file.attributes = attributes
+	end
+	
+	-- delete any left over file nodes that we didn't need
+	delete_file_nodes(pool)
+end
+
+
+--- Show the first 1000 bytes of a file
+local function show_file(self, filename)
+	delete_file_nodes(self.files)
+	gui.set_enabled(self.closenode, true)
+	gui.set_enabled(self.textnode, true)
+	local file, err = io.open(lfs.currentdir() .. "/" .. filename, "rb")
+	if not file then
+		gui.set_text(self.textnode, err)
+		return
+	end
+	local text = file:read(1000)
+	gui.set_text(self.textnode, text)
+end
+
+
+function init(self)
+	msg.post(".", "acquire_input_focus")
+	self.files = {}
+	self.fileproto = gui.get_node("fileproto/root")
+	self.textnode = gui.get_node("text")
+	self.closenode = gui.get_node("close")
+	gui.set_enabled(self.fileproto, false)
+	gui.set_enabled(self.textnode, false)
+	
+	show_current_dir(self)
+end
+
+
+function on_input(self, action_id, action)
+	if action_id == hash("touch") and action.released then
+		for _,file in pairs(self.files) do
+			if gui.pick_node(file.rootnode, action.x, action.y) then
+				-- directory, change dir and show file contents
+				if file.attributes.mode == "directory" then
+					lfs.chdir(file.name)
+					show_current_dir(self)
+				-- file, show contents
+				else
+					show_file(self, file.name)
+				end
+				return true
+			end
+		end
+		
+		-- close button, switch back to current dir
+		if gui.pick_node(self.closenode, action.x, action.y) and gui.is_enabled(self.closenode) then
+			show_current_dir(self)
+		end
+	end
+end
+
+function on_reload(self)
+	-- Add input-handling code here
+	-- Remove this function if not needed
+end

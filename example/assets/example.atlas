@@ -1,0 +1,33 @@
+images {
+  image: "/example/assets/images/grey.png"
+}
+images {
+  image: "/example/assets/images/grey_pressed.png"
+}
+images {
+  image: "/example/assets/images/list.png"
+}
+images {
+  image: "/example/assets/images/space_inlay.png"
+}
+images {
+  image: "/example/assets/images/space.png"
+}
+images {
+  image: "/example/assets/images/icon_57.png"
+}
+images {
+  image: "/example/assets/images/transparent1px.png"
+}
+images {
+  image: "/example/assets/images/black1px.png"
+}
+images {
+  image: "/example/assets/images/grey_crossGrey.png"
+}
+images {
+  image: "/example/assets/images/grey_boxCross.png"
+}
+margin: 0
+extrude_borders: 2
+inner_padding: 0
