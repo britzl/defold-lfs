@@ -36,7 +36,7 @@ local function show_current_dir(self)
 	local ok, err = pcall(function()
 		-- get current dir and show it
 		local currentdir = lfs.currentdir()
-		gui.set_text(gui.get_node("currentdir"), currentdir)
+		gui.set_text(gui.get_node("currentdir"), currentdir or "?")
 	
 		-- iterate current dir and show it's contents
 		-- reuse nodes or create new ones
@@ -54,13 +54,13 @@ local function show_current_dir(self)
 			table.insert(self.files, file)
 			
 			-- get file attributes and show permissions and file size
-			local attributes = lfs.attributes(currentdir .. "/" .. filename)
 			gui.set_text(file.nodes[hash("fileproto/name")], filename)
-			gui.set_text(file.nodes[hash("fileproto/permissions")], attributes.permissions)
-			gui.set_text(file.nodes[hash("fileproto/size")], attributes.size)
+			local attributes = lfs.attributes(currentdir .. "/" .. filename)
+			gui.set_text(file.nodes[hash("fileproto/permissions")], attributes and attributes.permissions or "?")
+			gui.set_text(file.nodes[hash("fileproto/size")], attributes and attributes.size or "?")
 			
 			file.name = filename
-			file.attributes = attributes
+			file.attributes = attributes or {}
 		end
 	end)
 
@@ -70,15 +70,19 @@ local function show_current_dir(self)
 	-- show error if something went wrong
 	if not ok then
 		show_text(self, err)
-	end	
+	end
+	return ok
 end
 
 
 -- change directory and show it's contents
 local function show_dir(self, dir)
 	local ok, err = pcall(function()
+		local currentdir = lfs.currentdir()
 		lfs.chdir(dir)
-		show_current_dir(self)
+		if not show_current_dir(self) then
+			lfs.chdir(currentdir)
+		end
 	end)
 	if not ok then
 		show_text(self, err)
