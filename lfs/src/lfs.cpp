@@ -984,8 +984,8 @@ dmExtension::Result AppInitializeLFSExtension(dmExtension::AppParams* params) {
 
 dmExtension::Result InitializeLFSExtension(dmExtension::Params* params) {
 	LuaInit(params->m_L);
-	printf("Registered %s Extension\n", MODULE_NAME);
 	return dmExtension::RESULT_OK;
+    dmLogInfo("Registered %s Extension\n", MODULE_NAME);
 }
 
 dmExtension::Result AppFinalizeLFSExtension(dmExtension::AppParams* params) {
