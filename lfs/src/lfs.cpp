@@ -966,34 +966,34 @@ static const struct luaL_Reg fslib[] = {
 
 
 static void LuaInit(lua_State* L) {
-	int top = lua_gettop(L);
+    int top = lua_gettop(L);
 
     dir_create_meta (L);
     lock_create_meta (L);
-	luaL_register(L, MODULE_NAME, fslib);
+    luaL_register(L, MODULE_NAME, fslib);
 
     lua_pop(L, 1);
     lua_pop(L, 1);
     lua_pop(L, 1);
-	assert(top == lua_gettop(L));
+    assert(top == lua_gettop(L));
 }
 
 dmExtension::Result AppInitializeLFSExtension(dmExtension::AppParams* params) {
-	return dmExtension::RESULT_OK;
+    return dmExtension::RESULT_OK;
 }
 
 dmExtension::Result InitializeLFSExtension(dmExtension::Params* params) {
-	LuaInit(params->m_L);
-	return dmExtension::RESULT_OK;
+    LuaInit(params->m_L);
     dmLogInfo("Registered %s Extension\n", MODULE_NAME);
+    return dmExtension::RESULT_OK;
 }
 
 dmExtension::Result AppFinalizeLFSExtension(dmExtension::AppParams* params) {
-	return dmExtension::RESULT_OK;
+    return dmExtension::RESULT_OK;
 }
 
 dmExtension::Result FinalizeLFSExtension(dmExtension::Params* params) {
-	return dmExtension::RESULT_OK;
+    return dmExtension::RESULT_OK;
 }
 
 
