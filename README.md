@@ -12,7 +12,7 @@ You can use Defold-LFS in your own project by adding this project as a [Defold l
 Or point to the ZIP file of a [specific release](https://github.com/britzl/defold-lfs/releases).
 
 ## Usage
-Once you have Defold-LFS added to your project you can use lfs just like you would normally use it. Please refer to the [LuaFileSystem reference](http://keplerproject.github.io/luafilesystem/manual.html#reference) for full usage instructions. Brief API overview:
+Once you have Defold-LFS added to your project you can use lfs just like you would normally use it. Please refer to the [LuaFileSystem reference](https://lunarmodules.github.io/luafilesystem/manual.html#reference) for full usage instructions. Brief API overview:
 
 	lfs.attributes (filepath [, aname | atable])
 	lfs.chdir (path)
