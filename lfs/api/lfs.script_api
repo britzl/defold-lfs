@@ -1,0 +1,87 @@
+- name: lfs
+  type: table
+  desc: File system manipulation library
+
+  members:
+    - name: attributes
+      type: function
+    
+      parameters:
+        - name: filepath
+        - name: attributename
+    
+    - name: chdir
+      type: function
+    
+      parameters:
+        - name: path
+    
+    - name: currentdir
+      type: function
+    
+    - name: dir
+      type: function
+    
+      parameters:
+        - name: path
+    
+    - name: link
+      type: function
+    
+      parameters:
+        - name: old
+        - name: new
+        - name: symlink
+    
+    - name: lock
+      type: function
+    
+      parameters:
+        - name: fh
+        - name: mode
+    
+    - name: lock_dir
+      type: function
+    
+      parameters:
+        - name: path
+    
+    - name: mkdir
+      type: function
+    
+      parameters:
+        - name: path
+    
+    - name: rmdir
+      type: function
+    
+      parameters:
+        - name: path
+    
+    - name: setmode
+      type: function
+    
+      parameters:
+        - name: filepath
+        - name: mode
+    
+    - name: symlinkattributes
+      type: function
+    
+      parameters:
+        - name: filepath
+        - name: attributename
+    
+    - name: touch
+      type: function
+    
+      parameters:
+        - name: filepath
+        - name: atime
+        - name: mtime
+    
+    - name: unlock
+      type: function
+    
+      parameters:
+        - name: fh
