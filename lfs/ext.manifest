@@ -1,1 +1,6 @@
 name: "LFS"
+
+platforms:
+    win32:
+        context:
+            defines:    ["_WIN32"]
