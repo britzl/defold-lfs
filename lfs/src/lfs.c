@@ -1,3 +1,5 @@
+#include <dmsdk/sdk.h>    // for lua.h, lauxlib.h and lualib.h
+
 /*
 ** LuaFileSystem
 ** File system manipulation library
@@ -67,8 +69,6 @@
 #endif
 
 #endif
-
-#include <dmsdk/sdk.h>
 
 #include "lfs.h"
 
