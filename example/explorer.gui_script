@@ -11,7 +11,7 @@ local function show_text(self, text)
 	delete_file_nodes(self.files)
 	gui.set_enabled(self.closenode, true)
 	gui.set_enabled(self.textnode, true)
-	gui.set_text(self.textnode, text)
+	gui.set_text(self.textnode, tostring(text))
 end
 
 
