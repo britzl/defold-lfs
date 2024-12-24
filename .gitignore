@@ -10,3 +10,4 @@ builtins
 .internal
 manifest.private.der
 manifest.public.der
+/.editor_settings
