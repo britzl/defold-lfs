@@ -561,6 +561,12 @@ static int file_unlock(lua_State * L)
 */
 static int make_link(lua_State * L)
 {
+#if defined(DM_PLATFORM_HTML5)
+  lua_pushnil(L);
+  lua_pushstring(L, "links are not supported on HTML5");
+  return 2;
+#endif
+
   const char *oldpath = luaL_checkstring(L, 1);
   const char *newpath = luaL_checkstring(L, 2);
 #ifndef _WIN32
