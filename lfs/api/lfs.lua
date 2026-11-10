@@ -56,8 +56,8 @@ lfs = {}
 ---followed recursively) and the information is about the file it refers to.
 ---To obtain information about the link itself, see function
 ---'lfs.symlinkattributes'.
----```
 --- Examples:
+---```
 ---  -- get a file's size
 ---  local filesize = lfs.attributes(path, "size")
 ---
