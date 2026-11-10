@@ -56,12 +56,14 @@ lfs = {}
 ---followed recursively) and the information is about the file it refers to.
 ---To obtain information about the link itself, see function
 ---'lfs.symlinkattributes'.
+---```
 --- Examples:
 ---  -- get a file's size
 ---  local filesize = lfs.attributes(path, "size")
 ---
 ---  -- fill an existing table with a file's attributes
 ---  att_table = lfs.attributes(path, att_table)
+---```
 ---@param filepath string The file to read
 ---@param request_name?|result_table? string|table The name of an attribute to read by itself, or a table to fill with attributes
 ---@return table|nil A table with the file attributes corresponding to 'filepath' (or nil in case of error)
@@ -87,6 +89,7 @@ function lfs.currentdir() end
 ---'dir_obj:next()', and explicitly close the directory before the iteration
 ---finished with 'dir_obj:close()'. Raises an error if 'path' is not a directory.
 --- Examples:
+---```
 ---  -- standard iterator
 ---  for file in lfs.dir(path) do
 ---    print(file)
@@ -100,6 +103,7 @@ function lfs.currentdir() end
 ---      break
 ---    end
 ---  end
+---```
 ---@param path string Directory to iterate over
 ---@return fun(state: userdata): string? iter The iterator function
 ---@return userdata dir_obj The opened directory
